@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 165 | 280W FTP Focus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Slate Blue, Energizing Orange, and Success Green. Backgrounds are clean off-white/gray for readability, Slate for professional structure, Orange for action, Green to highlight the actual progress made based on CSV data. -->
+    <!-- Application Structure Plan: An updated single-page dashboard. The structure flows from 'Current Data & Goals' (celebrating the drop to 175.4 lbs and setting the new 280W FTP target) -> 'Fueling for Power' -> 'The Meal Plan' -> 'Optimized Supplements'. This flow immediately grounds the user in their actual data progress before providing the adjusted execution steps for the summer peak. -->
+    <!-- Visualization & Content Choices: 
+         1. Weight vs. FTP Chart (Chart.js Line/Bar): Goal: Show the dual goal of dropping weight while increasing power. Justification: Visualizes actual data (down to 175 lbs) against the projection to 165 lbs, alongside a climbing FTP trendline toward 280W.
+         2. Macro Breakdown (Chart.js Doughnut): Goal: Simplify daily intake targets.
+         3. Interactive Meal Selector (HTML/JS Tabs): Goal: Provide quick options based on user's exact food preferences (Salmon, sourdough, no melon, no mayo).
+         NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        
+        /* Strict Chart Container CSS */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 380px; }
+        }
+        
+        .macro-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+        }
+
+        .tab-btn.active {
+            border-bottom: 4px solid #f97316; /* Tailwind orange-500 */
+            color: #f97316;
+            font-weight: bold;
+            background-color: #fff;
+        }
+        .meal-card { transition: transform 0.2s ease; }
+        .meal-card:hover { transform: translateY(-3px); }
+        
+        /* Custom scrollbar for tabs */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl font-black tracking-tighter text-orange-500">PROJECT 165</span>
+                    <span class="hidden md:inline-block text-sm font-bold text-slate-300 ml-2 bg-slate-800 px-2 py-1 rounded">Target: 280W FTP</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#dashboard" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Data Sync</a>
+                        <a href="#strategy" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Fueling</a>
+                        <a href="#mealplan" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Meal Matrix</a>
+                        <a href="#supplements" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Optimized Supps</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header / Hero -->
+    <header class="bg-slate-800 text-white py-12 md:py-16 px-4 text-center border-b-8 border-orange-500 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="inline-block bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-lg uppercase tracking-wide">
+                &#10003; Data Updated: May 2026
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Phase 2: Build Power, Shed Fat</h1>
+            <p class="text-xl md:text-2xl text-slate-300 mb-8">You are officially down to 175.4 lbs. Now we lock in the 280W FTP target for Mt. Washington while dropping the final 10 lbs.</p>
+            <div class="flex flex-wrap justify-center gap-4 text-sm font-semibold">
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">📉 Current: 175.4 lbs</span>
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">🎯 Target: 165 lbs (17% BF)</span>
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">⚡ FTP Goal: 280W</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- Section 1: Dashboard & Actual Data -->
+        <section id="dashboard" class="scroll-mt-20">
+            <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-green-500 pl-3">Data Sync & Progression</h2>
+                    <p class="mt-2 text-slate-600 max-w-2xl">Your CSV metrics show excellent progress from your 182 lb baseline. You've been crushing Threshold Range Surf (TTM) and Foundation rides. Let's visualize the final push.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Dual Axis Chart -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Weight Loss vs. Power Build</h3>
+                    <div class="chart-container">
+                        <canvas id="progressionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                        <h3 class="text-lg font-bold text-slate-800 mb-3">May 2026 Snapshot</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-green-50 p-3 rounded-lg text-center border border-green-100">
+                                <div class="text-xs text-green-600 uppercase tracking-wide font-bold">Current Weight</div>
+                                <div class="text-2xl font-black text-green-700">175.4<span class="text-sm font-normal"> lbs</span></div>
+                                <div class="text-xs text-green-600 mt-1">&#8595; Down 6.6 lbs</div>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded-lg text-center border border-green-100">
+                                <div class="text-xs text-green-600 uppercase tracking-wide font-bold">Body Fat</div>
+                                <div class="text-2xl font-black text-green-700">20.7<span class="text-sm font-normal">%</span></div>
+                                <div class="text-xs text-green-600 mt-1">Goal: 17.0%</div>
+                            </div>
+                            <div class="bg-orange-50 p-3 rounded-lg text-center col-span-2 border border-orange-200">
+                                <div class="text-sm text-orange-600 uppercase tracking-wide font-bold">Next Threshold Target</div>
+                                <div class="text-3xl font-black text-orange-600">280<span class="text-lg font-normal"> Watts (FTP)</span></div>
+                                <div class="text-sm text-orange-700 mt-1">Power-to-Weight Goal @ 165lbs: <strong>3.74 W/kg</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-xl shadow-md p-6 text-white border border-slate-700">
+                        <h3 class="text-lg font-bold mb-3 text-orange-400">Workout Analysis Notes</h3>
+                        <p class="text-sm text-slate-300 mb-3">Based on your uploaded `workouts.csv`:</p>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex items-start">
+                                <span class="mr-2 text-green-400">&#10003;</span>
+                                <span><strong>Consistency:</strong> Great mix of Bike (TTM Thresholds), Tennis, Golf, and Strength.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 text-orange-400">&#9889;</span>
+                                <span><strong>FTP Requirement:</strong> The "Threshold Range Surf" workouts are high-strain. To push FTP to 280W, these specific sessions require heavy carb-loading beforehand.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Strategy & Fueling -->
+        <section id="strategy" class="scroll-mt-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-orange-500 pl-3">Fueling for 280W (Without Gaining Fat)</h2>
+                <p class="mt-2 text-slate-600">Increasing FTP while losing weight is a delicate balance. You must <strong>fuel the work</strong> (carbs around the bike) and <strong>starve the fat</strong> (lean protein and volume veggies at rest).</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <!-- Macros -->
+                <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Targeted Macros</h3>
+                    <p class="text-sm text-slate-500 mb-6">Maintain this ratio to support Threshold workouts.</p>
+                    <div class="macro-chart-container">
+                        <canvas id="macroChart"></canvas>
+                    </div>
+                    <div class="mt-6 grid grid-cols-3 gap-2 text-center text-sm">
+                        <div><span class="block font-bold text-blue-600">50% Carbs</span>*Increased slightly for FTP build. Oats, potatoes, sourdough.</div>
+                        <div><span class="block font-bold text-red-500">30% Protein</span>Crucial for muscle repair. Fish, red meat, eggs.</div>
+                        <div><span class="block font-bold text-yellow-500">20% Fat</span>Avocado, PB. (Keep lower on hard ride days).</div>
+                    </div>
+                </div>
+
+                <!-- Rules of Engagement -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200 border-l-4 border-l-blue-500">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4">&#128692; The FTP Ride Protocol</h3>
+                        <p class="text-sm text-slate-600 mb-4">For days where your TSS is high or you have a "Threshold Range Surf" session:</p>
+                        <div class="space-y-3">
+                            <div class="bg-slate-50 p-3 rounded">
+                                <h4 class="font-bold text-slate-900 text-sm">Pre-Ride (Carb Focus)</h4>
+                                <p class="text-xs text-slate-600">Sourdough toast + Jam OR Oatmeal. No fats (avocado/PB) right before the ride as it slows absorption.</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded">
+                                <h4 class="font-bold text-slate-900 text-sm">During Ride (Sugar)</h4>
+                                <p class="text-xs text-slate-600">If pushing for 280W, your body needs instant glycogen. Use electrolyte mix with carbs in your bottles.</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded">
+                                <h4 class="font-bold text-slate-900 text-sm">Post-Ride (Recovery)</h4>
+                                <p class="text-xs text-slate-600">Protein Smoothie immediately. Your body is primed to absorb nutrients without storing them as fat.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Meal Plan -->
+        <section id="mealplan" class="scroll-mt-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-orange-500 pl-3">The "Rob-Approved" Meal Matrix</h2>
+                <p class="mt-2 text-slate-600">Customized to your food list: Heavy on Salmon, Red Meat, Sourdough, Potatoes, and Broccoli. <strong>ZERO: Mayo, Pickles, White Bread, Bars, or Cheese.</strong></p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                <!-- Tabs -->
+                <div class="flex border-b border-slate-200 overflow-x-auto no-scrollbar bg-slate-100">
+                    <button class="tab-btn active px-6 py-4 text-sm font-bold focus:outline-none whitespace-nowrap" onclick="switchTab('breakfast', this)">Breakfast</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-700 focus:outline-none whitespace-nowrap" onclick="switchTab('lunch', this)">Lunch</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-700 focus:outline-none whitespace-nowrap" onclick="switchTab('dinner', this)">Dinner</button>
+                    <button class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-700 focus:outline-none whitespace-nowrap" onclick="switchTab('snacks', this)">Defeating Snacks</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="p-6 bg-white min-h-[350px]">
+                    
+                    <!-- Breakfast -->
+                    <div id="content-breakfast" class="grid md:grid-cols-2 gap-6 animate-fade-in">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">The Pre-Ride Bowl</h4>
+                            <p class="text-xs font-bold text-blue-600 mb-3 uppercase tracking-wide">Best before FTP Workouts</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>1/2 cup Oatmeal (microwave fast)</li>
+                                <li>1 scoop Protein Powder (mixed in after heating)</li>
+                                <li>Berries (No melons per preference)</li>
+                                <li>Black Coffee</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">Sourdough & Eggs</h4>
+                            <p class="text-xs font-bold text-green-600 mb-3 uppercase tracking-wide">Best for Rest/Light Days</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>3 Scrambled Eggs</li>
+                                <li>2 slices Sourdough Bread (toasted)</li>
+                                <li>1/4 Avocado (smashed on toast - replaces mayo/butter)</li>
+                                <li>Black Coffee</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Lunch -->
+                    <div id="content-lunch" class="grid md:grid-cols-2 gap-6 hidden">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">The Desk Deli (No Mayo)</h4>
+                            <p class="text-sm text-slate-600 mb-3">Better than takeout. Prep night before.</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>2 slices Wheat or Sourdough Bread</li>
+                                <li>Generous portion lean deli meat (Turkey/Roast Beef)</li>
+                                <li>Avocado spread</li>
+                                <li>Side: Edamame (buy pre-cooked frozen, microwave 1 min)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">Quick PB&J & Protein</h4>
+                            <p class="text-sm text-slate-600 mb-3">When slammed with work. High carb.</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>PB&J on Wheat Bread</li>
+                                <li>Side: 1 cup plain Greek Yogurt (vital for protein)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Dinner -->
+                    <div id="content-dinner" class="grid md:grid-cols-2 gap-6 hidden">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">The Salmon Standard</h4>
+                            <p class="text-sm text-slate-600 mb-3">Clean, lean, high omega-3.</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>Grilled or Smoked Salmon (large piece)</li>
+                                <li>Baked Potato</li>
+                                <li>Steamed or roasted Cauliflower/Broccoli (No mushy veggies!)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
+                            <h4 class="font-bold text-lg text-slate-800 mb-2">Cyclist Pasta & Red Meat</h4>
+                            <p class="text-sm text-slate-600 mb-3">Night before a massive ride (like Triple Bypass training).</p>
+                            <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                                <li>Pasta (measured portion - 1.5 cups cooked)</li>
+                                <li>Lean ground red meat or steak strips</li>
+                                <li>Side: Huge pile of steamed broccoli (fills you up)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Snacks -->
+                    <div id="content-snacks" class="hidden">
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-6">
+                            <h3 class="text-lg font-bold text-orange-800 mb-2">&#128680; Defeating the "Snack Attack"</h3>
+                            <p class="text-sm text-orange-700 mb-3">You mentioned wanting to reduce crackers, cheese, and impulsive eating. Follow this sequence when stressed/hungry:</p>
+                            <ol class="list-decimal pl-5 space-y-2 text-sm text-orange-900 font-medium">
+                                <li>Drink 16oz of water immediately. Thirst mimics hunger at altitude.</li>
+                                <li>If still hungry, eat high-volume, low-calorie first: Bowl of Edamame.</li>
+                                <li>Remove triggers: Do not keep crackers, cheese, or bars in the house.</li>
+                            </ol>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                                <div class="text-2xl mb-1">&#129365;</div>
+                                <h4 class="font-bold text-slate-800 text-sm">Volume: Edamame</h4>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                                <div class="text-2xl mb-1">&#127822;</div>
+                                <h4 class="font-bold text-slate-800 text-sm">Sweet: Fruit + 1tbsp PB</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Supplements & Protocol -->
+        <section id="supplements" class="scroll-mt-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-slate-500 pl-3">Optimized Supplement Protocol</h2>
+                <p class="mt-2 text-slate-600">Addressing your Creatine dose and implementing Dr. Rhonda Patrick's stringent requirements for multivitamin sourcing.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- Creatine Adjustment -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-t-blue-500 border-l border-r border-b border-slate-200">
+                    <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center">
+                        <span class="text-2xl mr-2">&#9881;</span> Creatine Adjustment
+                    </h3>
+                    <div class="bg-blue-50 text-blue-800 p-3 rounded text-sm font-semibold mb-4 border border-blue-100">
+                        Current Intake: 10g/day &rarr; New Target: 5g/day
+                    </div>
+                    <p class="text-sm text-slate-700 mb-4">
+                        <strong>Why adjust?</strong> 10g daily is a "loading phase" dose, not a maintenance dose. Long-term use at 10g causes your muscles to hold unnecessary intracellular water weight without providing extra athletic benefit.
+                    </p>
+                    <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
+                        <li><strong>Action:</strong> Drop immediately to 5g per day.</li>
+                        <li><strong>Benefit:</strong> You will likely shed 1-2 lbs of pure water weight within the next 7 days, bringing you closer to 173 lbs instantly.</li>
+                        <li><strong>Performance:</strong> 5g perfectly maintains muscle saturation for your 280W FTP sprints and hill climbs.</li>
+                    </ul>
+                </div>
+
+                <!-- Multivitamin (Rhonda Patrick) -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-t-green-500 border-l border-r border-b border-slate-200">
+                    <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center">
+                        <span class="text-2xl mr-2">&#128138;</span> Multivitamin Protocol
+                    </h3>
+                    <p class="text-sm text-slate-700 mb-4">
+                        Following Dr. Rhonda Patrick's principles for bioavailability, avoiding rancidity, and proper sourcing.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">1. Approved Brands (NSF Certified)</h4>
+                            <p class="text-sm text-slate-600"><strong>Thorne</strong> (Basic Nutrients 2/Day) or <strong>Pure Encapsulations</strong> (O.N.E. Multivitamin). These use bioavailable forms like methylfolate instead of cheap folic acid.</p>
+                        </div>
+                        
+                        <div class="bg-red-50 border border-red-200 p-3 rounded">
+                            <h4 class="font-bold text-red-800 text-sm">2. Sourcing Rule: NO AMAZON</h4>
+                            <p class="text-xs text-red-700 mt-1">Dr. Patrick highly warns against Amazon due to commingled inventory (counterfeit risk) and un-airconditioned warehouses which cause vitamins (especially lipid/fat-soluble ones) to oxidize and go rancid before you even open the bottle.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">3. Where to Buy</h4>
+                            <p class="text-sm text-slate-600">Order <strong>directly from Thorne.com</strong> or via a registered dispensary like <strong>Fullscript</strong> to guarantee cold-chain storage and fresh batch numbers.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800 mt-12">
+        <p>Prepared for Rob Withers | May 2026 Update | FTP 280 Target</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Switching Logic for Meal Plan
+        function switchTab(tabId, element) {
+            const contents = document.querySelectorAll('[id^="content-"]');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active', 'text-slate-900');
+                btn.classList.add('text-slate-500');
+            });
+
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            element.classList.add('active');
+            element.classList.remove('text-slate-500');
+        }
+
+        // --- Chart.js Implementations ---
+
+        // 1. Dual-Axis Progression Chart (Weight vs FTP)
+        const progCtx = document.getElementById('progressionChart').getContext('2d');
+        
+        // Data derived from user inputs: Started Dec ~182, May 22 actual is 175.4. 
+        // Projecting to Aug 15 (Mt Washington) to hit 165.
+        const labels = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May (Now)', 'Jun', 'Jul', 'Aug (Peak)'];
+        
+        // Weight data: Actuals up to May, projected thereafter
+        const weightData = [182, 180.5, 179, 177.5, 176, 175.4, 171.5, 168, 165];
+        
+        // FTP data: Hypothetical build from winter base to 280W target
+        const ftpData = [240, 245, 250, 255, 260, 265, 272, 278, 280];
+
+        const progressionChart = new Chart(progCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Weight (lbs)',
+                        data: weightData,
+                        borderColor: '#3b82f6', // Blue
+                        backgroundColor: '#3b82f6',
+                        borderWidth: 3,
+                        yAxisID: 'yWeight',
+                        tension: 0.3,
+                        pointRadius: [4, 4, 4, 4, 4, 8, 4, 4, 8], // Highlight 'Now' and 'Peak'
+                        pointBackgroundColor: ['#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6', '#10b981', '#3b82f6', '#3b82f6', '#f97316']
+                    },
+                    {
+                        label: 'Estimated FTP (Watts)',
+                        data: ftpData,
+                        borderColor: '#f97316', // Orange
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 3,
+                        borderDash: [5, 5], // Dashed to show it's a build target
+                        yAxisID: 'yFTP',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: [0, 0, 0, 0, 0, 6, 0, 0, 8],
+                        pointBackgroundColor: '#f97316'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + (context.dataset.yAxisID === 'yWeight' ? ' lbs' : ' W');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    yWeight: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Weight (lbs)', color: '#3b82f6', font: {weight: 'bold'} },
+                        min: 160,
+                        max: 185
+                    },
+                    yFTP: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'FTP (Watts)', color: '#f97316', font: {weight: 'bold'} },
+                        min: 230,
+                        max: 290,
+                        grid: { drawOnChartArea: false } // only draw grid lines for one axis
+                    }
+                }
+            }
+        });
+
+        // 2. Macro Breakdown Chart (Slightly adjusted for higher carb FTP build)
+        const macroCtx = document.getElementById('macroChart').getContext('2d');
+        const macroChart = new Chart(macroCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Carbs (Fuel)', 'Protein (Recovery)', 'Fats (Hormones)'],
+                datasets: [{
+                    data: [50, 30, 20],
+                    backgroundColor: ['#3b82f6', '#ef4444', '#eab308'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
