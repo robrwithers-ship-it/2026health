@@ -7,15 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Chosen Palette: Slate Blue, Energizing Orange, and Success Green. -->
-    <!-- Application Structure Plan: Dashboard -> Fueling -> Meal Plan -> Supps. Calendar is optimized strictly for Mount Blue Sky starting in Idaho Springs. Gap-filler events suggested for July. Cognitive creatine protocol remains active. Added full supplement list with doses/sources. -->
-    <!-- Visualization & Content Choices: 
-         1. Weight vs. FTP Chart: Updated labels to reflect the new event timeline (Hundito -> July Prep -> Blue Sky).
-         2. Macro Breakdown (Chart.js Doughnut).
-         3. Interactive Meal Selector (HTML/JS Tabs).
-         NO SVG/Mermaid used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
@@ -23,14 +14,14 @@
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
-            height: 320px;
+            height: 350px;
             max-height: 400px;
         }
         @media (min-width: 768px) {
-            .chart-container { height: 380px; }
+            .chart-container { height: 400px; }
         }
         
         .macro-chart-container {
@@ -67,10 +58,10 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#dashboard" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="#strategy" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Fueling Strategy</a>
-                        <a href="#mealplan" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Meal Matrix</a>
-                        <a href="#supplements" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium">Supplements</a>
+                        <a href="#dashboard" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium transition">Dashboard</a>
+                        <a href="#strategy" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium transition">Fueling Strategy</a>
+                        <a href="#mealplan" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium transition">Meal Matrix</a>
+                        <a href="#supplements" class="hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium transition">Supplements & Timing</a>
                     </div>
                 </div>
             </div>
@@ -81,14 +72,14 @@
     <header class="bg-slate-800 text-white py-12 md:py-16 px-4 text-center border-b-8 border-orange-500 relative overflow-hidden">
         <div class="max-w-4xl mx-auto relative z-10">
             <div class="inline-block bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-lg uppercase tracking-wide">
-                &#10003; Schedule Updated
+                &#10003; May Protocol Finalized
             </div>
             <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Target Acquired: Mount Blue Sky</h1>
-            <p class="text-xl md:text-2xl text-slate-300 mb-8">Triple Bypass is out. We are shifting all focus to pushing your FTP to 280W to conquer the 6,500+ feet of climbing from Idaho Springs, while melting down to 17% BF.</p>
+            <p class="text-xl md:text-2xl text-slate-300 mb-8">Triple Bypass is out. We are shifting all focus to pushing your FTP to 280W to conquer the 6,500+ feet of climbing from Idaho Springs, melting down to 17% BF, and peaking for Pikes Peak.</p>
             <div class="flex flex-wrap justify-center gap-4 text-sm font-semibold">
-                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">📉 Current: 20.7% BF (175.4 lbs)</span>
-                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">🎯 Target: 17.0% BF</span>
-                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600">⚡ FTP Goal: 280W</span>
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Current BF: 20.7% (175.4 lbs)</span>
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span>Target BF: 17.0%</span>
+                <span class="bg-slate-700 px-4 py-2 rounded-full shadow border border-slate-600 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span>FTP Goal: 280W</span>
             </div>
         </div>
     </header>
@@ -99,13 +90,15 @@
         <section id="dashboard" class="scroll-mt-20">
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Dual Axis Chart -->
+                <!-- Multi-Axis Chart -->
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-slate-200">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">Progression vs. Summer Peak</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Progression vs. Summer Peaks (Metrics Convergence)</h3>
                     <div class="chart-container">
                         <canvas id="progressionChart"></canvas>
                     </div>
-                    <p class="text-xs text-slate-500 mt-4 text-center">Note: Weight target is effectively ~169lbs due to 3-4lbs of intracellular water from the 10g cognitive creatine protocol.</p>
+                    <p class="text-xs text-slate-500 mt-4 text-center font-medium bg-slate-50 p-2 rounded">
+                        Note: Absolute scale weight target is effectively ~169lbs due to 3-4lbs of functional intracellular water weight driven by the 10g cognitive creatine protocol.
+                    </p>
                 </div>
 
                 <!-- Live Metrics & Events -->
@@ -113,10 +106,10 @@
                     <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
                         <h3 class="text-lg font-bold text-slate-800 mb-3">Metrics Snapshot</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-50 p-3 rounded-lg text-center border border-blue-100">
-                                <div class="text-xs text-blue-600 uppercase tracking-wide font-bold">Body Fat (Primary)</div>
-                                <div class="text-2xl font-black text-blue-700">20.7<span class="text-sm font-normal">%</span></div>
-                                <div class="text-xs text-blue-600 mt-1 font-bold">Target: 17.0%</div>
+                            <div class="bg-emerald-50 p-3 rounded-lg text-center border border-emerald-100">
+                                <div class="text-xs text-emerald-600 uppercase tracking-wide font-bold">Body Fat (Primary)</div>
+                                <div class="text-2xl font-black text-emerald-700">20.7<span class="text-sm font-normal">%</span></div>
+                                <div class="text-xs text-emerald-600 mt-1 font-bold">Target: 17.0%</div>
                             </div>
                             <div class="bg-orange-50 p-3 rounded-lg text-center border border-orange-200">
                                 <div class="text-xs text-orange-600 uppercase tracking-wide font-bold">Threshold Target</div>
@@ -131,28 +124,20 @@
                         <ul class="space-y-3 text-sm text-slate-300">
                             <li class="flex justify-between border-b border-slate-700 pb-2"><span>Jun 13</span> <strong>Hundito MTB</strong></li>
                             
+                            <li class="flex justify-between border-b border-slate-700 pb-2">
+                                <span>Mid-July</span> <strong>Prep (e.g. Tour de Steamboat)</strong>
+                            </li>
+
                             <li class="flex justify-between border-b border-blue-500 pb-2 bg-slate-800 p-2 rounded">
-                                <span class="font-bold text-blue-300">Mid-July</span> 
-                                <strong class="text-right text-blue-300">Prep Event (See Below)</strong>
+                                <span class="font-bold text-blue-300">Jul 25</span> 
+                                <strong class="text-right text-blue-300 uppercase tracking-wide">Mt. Blue Sky</strong>
                             </li>
 
                             <li class="flex justify-between border-b border-orange-500 pb-2 text-orange-300 pt-2">
-                                <span class="font-bold">Jul 25</span> <strong class="text-base uppercase tracking-wide">Mt. Blue Sky</strong>
+                                <span class="font-bold">Aug 8</span> <strong class="text-base uppercase tracking-wide">Pikes Peak Climb</strong>
                             </li>
-                            <li class="flex justify-between border-b border-slate-700 pb-2 pt-2">
-                                <span>August TBD</span> <strong>Copper Triangle / Pikes Peak</strong>
-                            </li>
-                            <li class="flex justify-between pb-1"><span>Sep 26</span> <strong>Denver Century</strong></li>
+                            <li class="flex justify-between pb-1 pt-2"><span>Sep 26</span> <strong>Denver Century</strong></li>
                         </ul>
-                        
-                        <div class="mt-4 bg-slate-800 p-3 rounded-lg border border-slate-600">
-                            <h4 class="font-bold text-blue-400 text-sm mb-2">Bridging the Gap (Jun 13 - Jul 25)</h4>
-                            <p class="text-xs mb-2 text-slate-300">You need a solid, high-altitude dress rehearsal between the Hundito and Blue Sky. Options:</p>
-                            <ul class="text-xs space-y-2 text-slate-300">
-                                <li><strong class="text-white">1. Tour de Steamboat (Mid-July):</strong> Excellent supported road/gravel options. Massive mountain volume without the Triple Bypass logistics.</li>
-                                <li><strong class="text-white">2. "Peak-to-Peak" Epic (Self-Guided):</strong> A massive local training ride down the Peak-to-Peak highway (Estes to Black Hawk).</li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -162,21 +147,21 @@
         <section id="strategy" class="scroll-mt-20">
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-orange-500 pl-3">Fueling for Altitude & Sustained Power</h2>
-                <p class="mt-2 text-slate-600"><strong>Correction applied:</strong> Mount Blue Sky does not start at 10,600 ft—it starts in Idaho Springs at roughly 7,500 ft and climbs to over 14,100 ft. That is over <strong>6,500 feet of relentless elevation gain</strong>. Sustained climbing combined with extreme altitude severely suppresses appetite but rapidly burns glycogen. We must train your gut to take in carbs at high sustained efforts.</p>
+                <p class="mt-2 text-slate-600">Mount Blue Sky starts in Idaho Springs (7,500 ft) and climbs to over 14,100 ft. That is over <strong>6,500 feet of relentless elevation gain</strong>. Sustained climbing combined with extreme altitude severely suppresses appetite but rapidly burns glycogen. We must train your gut to take in carbs at high sustained efforts.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 <!-- Macros -->
                 <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
                     <h3 class="text-xl font-bold text-slate-800 mb-2">Targeted Macros</h3>
-                    <p class="text-sm text-slate-500 mb-6">Maintain this ratio to support Threshold workouts.</p>
+                    <p class="text-sm text-slate-500 mb-6">Maintain this ratio to support 280W Threshold workouts.</p>
                     <div class="macro-chart-container">
                         <canvas id="macroChart"></canvas>
                     </div>
                     <div class="mt-6 grid grid-cols-3 gap-2 text-center text-sm">
-                        <div><span class="block font-bold text-blue-600">50% Carbs</span>*Increased slightly for FTP build. Oats, potatoes, sourdough.</div>
-                        <div><span class="block font-bold text-red-500">30% Protein</span>Crucial for muscle repair. Fish, red meat, eggs.</div>
-                        <div><span class="block font-bold text-yellow-500">20% Fat</span>Avocado, PB. (Keep lower on hard ride days).</div>
+                        <div><span class="block font-bold text-blue-600">50% Carbs</span>*Increased for FTP build. Oats, potatoes, sourdough.</div>
+                        <div><span class="block font-bold text-red-500">30% Protein</span>Crucial for muscle repair & satiety.</div>
+                        <div><span class="block font-bold text-yellow-500">20% Fat</span>Avocado, PB. (Keep lower pre-ride).</div>
                     </div>
                 </div>
 
@@ -192,11 +177,11 @@
                             </div>
                             <div class="bg-slate-50 p-3 rounded">
                                 <h4 class="font-bold text-slate-900 text-sm">During Ride (Sugar Training)</h4>
-                                <p class="text-xs text-slate-600">If pushing for 280W on a 6,500ft climb, your body needs instant glycogen. Use electrolyte mix with carbs in your bottles. <strong>Practice this indoors now so your stomach can handle it passing 12,000ft.</strong></p>
+                                <p class="text-xs text-slate-600">Use electrolyte mix with carbs in your bottles. <strong>Practice this indoors now so your stomach can handle digesting sugar passing 12,000ft.</strong></p>
                             </div>
                             <div class="bg-slate-50 p-3 rounded">
                                 <h4 class="font-bold text-slate-900 text-sm">Post-Ride (Recovery)</h4>
-                                <p class="text-xs text-slate-600">Protein Smoothie immediately. Your body is primed to absorb nutrients without storing them as fat.</p>
+                                <p class="text-xs text-slate-600">Whey Protein Smoothie within 30-45 minutes. Mix in your 5g Afternoon Creatine dose here to leverage the insulin spike.</p>
                             </div>
                         </div>
                     </div>
@@ -232,7 +217,7 @@
                                 <li>1/2 cup Oatmeal (microwave fast)</li>
                                 <li>1 scoop Protein Powder (mixed in after heating)</li>
                                 <li>Berries (No melons per preference)</li>
-                                <li>Black Coffee</li>
+                                <li>Black Coffee (Mix 5g Creatine here)</li>
                             </ul>
                         </div>
                         <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
@@ -241,8 +226,8 @@
                             <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
                                 <li>3 Scrambled Eggs</li>
                                 <li>2 slices Sourdough Bread (toasted)</li>
-                                <li>1/4 Avocado (smashed on toast - replaces mayo/butter)</li>
-                                <li>Black Coffee</li>
+                                <li>1/4 Avocado (smashed on toast - drops of D3/K2 go here)</li>
+                                <li>Black Coffee (Mix 5g Creatine here)</li>
                             </ul>
                         </div>
                     </div>
@@ -277,12 +262,13 @@
                             <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
                                 <li>Grilled or Smoked Salmon (large piece)</li>
                                 <li>Baked Potato</li>
-                                <li>Steamed or roasted Cauliflower/Broccoli (No mushy veggies!)</li>
+                                <li>Steamed or roasted Cauliflower/Broccoli</li>
+                                <li><span class="text-blue-600 font-bold">*Take 2x Fish Oil Softgels with this meal</span></li>
                             </ul>
                         </div>
                         <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 meal-card">
                             <h4 class="font-bold text-lg text-slate-800 mb-2">Cyclist Pasta & Red Meat</h4>
-                            <p class="text-sm text-slate-600 mb-3">Night before a massive ride (like a Mid-July Peak-to-Peak rehearsal).</p>
+                            <p class="text-sm text-slate-600 mb-3">Night before a massive ride or FTP effort.</p>
                             <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
                                 <li>Pasta (measured portion - 1.5 cups cooked)</li>
                                 <li>Lean ground red meat or steak strips</li>
@@ -295,22 +281,12 @@
                     <div id="content-snacks" class="hidden">
                         <div class="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-6">
                             <h3 class="text-lg font-bold text-orange-800 mb-2">&#128680; Defeating the "Snack Attack"</h3>
-                            <p class="text-sm text-orange-700 mb-3">You mentioned wanting to reduce crackers, cheese, and impulsive eating. Follow this sequence when stressed/hungry:</p>
+                            <p class="text-sm text-orange-700 mb-3">Following executive load or post-ride depletion, follow this sequence when stressed/hungry:</p>
                             <ol class="list-decimal pl-5 space-y-2 text-sm text-orange-900 font-medium">
-                                <li>Drink 16oz of water immediately. Thirst mimics hunger at altitude.</li>
+                                <li>Drink 16oz of water immediately. Altitude & A/C mask thirst as hunger.</li>
                                 <li>If still hungry, eat high-volume, low-calorie first: Bowl of Edamame.</li>
                                 <li>Remove triggers: Do not keep crackers, cheese, or bars in the house.</li>
                             </ol>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                                <div class="text-2xl mb-1">&#129365;</div>
-                                <h4 class="font-bold text-slate-800 text-sm">Volume: Edamame</h4>
-                            </div>
-                            <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                                <div class="text-2xl mb-1">&#127822;</div>
-                                <h4 class="font-bold text-slate-800 text-sm">Sweet: Fruit + 1tbsp PB</h4>
-                            </div>
                         </div>
                     </div>
 
@@ -321,60 +297,96 @@
         <!-- Section 4: Supplements & Protocol -->
         <section id="supplements" class="scroll-mt-20">
             <div class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-slate-500 pl-3">Full Supplement Protocol</h2>
-                <p class="mt-2 text-slate-600">Locking in your cognitive edge for work and optimizing your cellular health based on Dr. Rhonda Patrick's stringent sourcing rules.</p>
+                <h2 class="text-3xl font-bold text-slate-900 border-l-4 border-slate-500 pl-3">Finalized Clinical Supplement Stack & Timing</h2>
+                <p class="mt-2 text-slate-600">Streamlined to reduce pill fatigue. Engineered for cognitive resilience, extreme altitude vascular support, and strict adherence to cold-chain sourcing rules (No Amazon).</p>
             </div>
 
+            <!-- The Daily Schedule UI -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+                <!-- Morning -->
+                <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">&#9728;&#65039;</span>
+                        <h3 class="font-bold text-sky-900">Morning (Breakfast)</h3>
+                    </div>
+                    <ul class="text-sm space-y-3 text-sky-800">
+                        <li class="border-b border-sky-100 pb-2"><strong>1x Pure Encapsulations O.N.E.</strong><br><span class="text-xs">Take with food. Active B-Vitamins.</span></li>
+                        <li class="border-b border-sky-100 pb-2"><strong>4-8 Drops Thorne D3/K2</strong><br><span class="text-xs">Drop on food to absorb with dietary fat.</span></li>
+                        <li><strong>5g Naked Creatine (Dose 1)</strong><br><span class="text-xs">Mix in coffee or water.</span></li>
+                    </ul>
+                </div>
+                
+                <!-- Afternoon -->
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">&#128338;</span>
+                        <h3 class="font-bold text-orange-900">Afternoon (Lunch/Post-Ride)</h3>
+                    </div>
+                    <ul class="text-sm space-y-3 text-orange-800">
+                        <li class="border-b border-orange-100 pb-2"><strong>5g Naked Creatine (Dose 2)</strong><br><span class="text-xs">Splits the 10g dose to prevent stomach upset.</span></li>
+                        <li><strong>1-2 Scoops Whey Isolate</strong><br><span class="text-xs">Only on cycling days. Mix the creatine right into the shake!</span></li>
+                    </ul>
+                </div>
+
+                <!-- Dinner -->
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">&#127869;&#65039;</span>
+                        <h3 class="font-bold text-indigo-900">Dinner (Heavy Meal)</h3>
+                    </div>
+                    <ul class="text-sm space-y-3 text-indigo-800">
+                        <li><strong>2x Nordic Naturals Ultimate Omega 2X</strong><br><span class="text-xs">Must take with heaviest fat meal to trigger bile release and stop "fish burps". (Clears inflammation).</span></li>
+                    </ul>
+                </div>
+
+                <!-- Evening -->
+                <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-sm text-white">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">&#127769;</span>
+                        <h3 class="font-bold text-slate-100">Evening (Pre-Bed)</h3>
+                    </div>
+                    <ul class="text-sm space-y-3 text-slate-300">
+                        <li><strong>1-2x Pure Encapsulations Magnesium Glycinate</strong><br><span class="text-xs">Take 45-60 mins before sleep. Calms CNS, relaxes muscle tension from the saddle. No GI distress.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Source Table -->
             <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-left text-sm whitespace-nowrap">
                         <thead class="uppercase tracking-wider border-b-2 border-slate-200 bg-slate-50 text-slate-600 font-bold">
                             <tr>
                                 <th scope="col" class="px-6 py-4">Supplement</th>
-                                <th scope="col" class="px-6 py-4">Purpose</th>
-                                <th scope="col" class="px-6 py-4">Dose & Timing</th>
-                                <th scope="col" class="px-6 py-4">Recommended Source/Brand</th>
+                                <th scope="col" class="px-6 py-4">Specific Brand Required</th>
+                                <th scope="col" class="px-6 py-4">Sourcing Rule</th>
                             </tr>
                         </thead>
                         <tbody class="text-slate-700">
-                            <!-- Creatine -->
                             <tr class="border-b border-slate-100 hover:bg-slate-50">
-                                <td class="px-6 py-4 font-bold text-slate-900">
-                                    <span class="text-xl mr-2">&#129504;</span>Creatine Monohydrate
-                                </td>
-                                <td class="px-6 py-4 whitespace-normal">Cognitive resilience, overcoming blood-brain barrier for demanding jobs. Secondary: Sprint/Hill power.</td>
-                                <td class="px-6 py-4 font-semibold text-orange-600">10g / Daily<br><span class="text-xs font-normal text-slate-500">(Split 5g AM / 5g PM if stomach upset)</span></td>
-                                <td class="px-6 py-4"><strong>Thorne</strong> or <strong>Creapure®</strong> branded raw powder.<br><span class="text-xs text-red-500 font-bold">NO AMAZON</span></td>
+                                <td class="px-6 py-4 font-bold text-slate-900">Creatine Monohydrate</td>
+                                <td class="px-6 py-4 text-orange-600 font-semibold">Naked Creatine</td>
+                                <td class="px-6 py-4">Direct or iHerb. (Heavy metal tested).</td>
                             </tr>
-                            
-                            <!-- Multivitamin -->
                             <tr class="border-b border-slate-100 hover:bg-slate-50">
-                                <td class="px-6 py-4 font-bold text-slate-900">
-                                    <span class="text-xl mr-2">&#128138;</span>Comprehensive Multivitamin
-                                </td>
-                                <td class="px-6 py-4 whitespace-normal">Fill micronutrient gaps, combat indoor training D3 deficit, support metabolic pathways.</td>
-                                <td class="px-6 py-4 font-semibold text-blue-600">As directed on bottle<br><span class="text-xs font-normal text-slate-500">(With food containing fat)</span></td>
-                                <td class="px-6 py-4"><strong>Thorne Basic Nutrients 2/Day</strong> OR<br><strong>Pure Encapsulations O.N.E.</strong><br><span class="text-xs text-red-500 font-bold">NO AMAZON (Rancidity risk) - Buy direct or Fullscript.</span></td>
+                                <td class="px-6 py-4 font-bold text-slate-900">Daily Multivitamin</td>
+                                <td class="px-6 py-4 text-blue-600 font-semibold">Pure Encapsulations O.N.E.</td>
+                                <td class="px-6 py-4">Direct, Fullscript, or iHerb.</td>
                             </tr>
-
-                            <!-- Electrolytes -->
                             <tr class="border-b border-slate-100 hover:bg-slate-50">
-                                <td class="px-6 py-4 font-bold text-slate-900">
-                                    <span class="text-xl mr-2">&#128167;</span>Electrolytes (Sodium/Mag/Potassium)
-                                </td>
-                                <td class="px-6 py-4 whitespace-normal">Prevent cramping, maintain blood volume at altitude and during heavy indoor trainer sweat sessions.</td>
-                                <td class="px-6 py-4 font-semibold text-blue-600">1 packet/scoop per hour of riding</td>
-                                <td class="px-6 py-4"><strong>LMNT</strong> (High sodium, zero sugar) or <strong>Skratch Labs</strong>.<br>Avoid generic grocery store sports drinks.</td>
+                                <td class="px-6 py-4 font-bold text-slate-900">Omega-3 (2g EPA/DHA)</td>
+                                <td class="px-6 py-4 text-blue-600 font-semibold">Nordic Naturals Ultimate Omega 2X</td>
+                                <td class="px-6 py-4 font-bold text-red-500">DIRECT ONLY. (Strict cold-chain).</td>
                             </tr>
-
-                            <!-- Whey Protein -->
+                            <tr class="border-b border-slate-100 hover:bg-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-900">Vitamin D3 / K2</td>
+                                <td class="px-6 py-4 text-blue-600 font-semibold">Thorne Liquid Drops</td>
+                                <td class="px-6 py-4">Direct, Fullscript, or iHerb.</td>
+                            </tr>
                             <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 font-bold text-slate-900">
-                                    <span class="text-xl mr-2">&#129371;</span>Whey Protein Isolate
-                                </td>
-                                <td class="px-6 py-4 whitespace-normal">Immediate post-ride muscle repair. Prevents late-day reactive hunger and snacking.</td>
-                                <td class="px-6 py-4 font-semibold text-blue-600">1-2 scoops (25-50g protein) <br><span class="text-xs font-normal text-slate-500">Post-ride or in morning oats</span></td>
-                                <td class="px-6 py-4"><strong>Transparent Labs Grass-Fed Isolate</strong> or <strong>Optimum Nutrition Gold Standard</strong>.</td>
+                                <td class="px-6 py-4 font-bold text-slate-900">Magnesium Glycinate</td>
+                                <td class="px-6 py-4 text-blue-600 font-semibold">Pure Encapsulations</td>
+                                <td class="px-6 py-4">Direct, Fullscript, or iHerb.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -382,15 +394,15 @@
             </div>
             
             <div class="mt-6 bg-red-50 border border-red-200 p-4 rounded-xl text-sm">
-                <h4 class="font-bold text-red-800 mb-1">A Note on Dr. Rhonda Patrick's Sourcing Rule:</h4>
-                <p class="text-red-700">Dr. Patrick explicitly warns against purchasing vitamins (especially lipid/fat-soluble vitamins found in multis or Omega-3s) from Amazon. Their warehouses are often not temperature-controlled, leading to lipid peroxidation (the oils go rancid and toxic) before you even open the bottle. Always buy supplements directly from the manufacturer's website or a controlled dispensary like Fullscript to guarantee cold-chain storage.</p>
+                <h4 class="font-bold text-red-800 mb-1">⚠️ The Amazon Sourcing Rule (Reminder):</h4>
+                <p class="text-red-700">Dr. Patrick explicitly warns against purchasing supplements (especially lipid/fat-soluble vitamins like Omega-3s and D3) from Amazon. Their logistics warehouses are often not temperature-controlled, leading to lipid peroxidation (the delicate oils go rancid and toxic) before you even open the bottle. Always utilize the verified channels above.</p>
             </div>
         </section>
 
     </main>
 
     <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800 mt-12">
-        <p>Prepared for Rob Withers | May 2026 Update | FTP 280 & Mount Blue Sky Focus</p>
+        <p>Prepared for Rob Withers | Updated May 2026 | FTP 280, Mt. Blue Sky & Pikes Peak Focus</p>
     </footer>
 
     <!-- JavaScript Logic -->
@@ -413,17 +425,16 @@
 
         // --- Chart.js Implementations ---
 
-        // 1. Dual-Axis Progression Chart (Weight vs FTP)
+        // 1. Multi-Axis Progression Chart (Weight, FTP, Body Fat %)
         const progCtx = document.getElementById('progressionChart').getContext('2d');
         
-        // Updated labels: Removed Triple Bypass, added Early/Mid July Prep
-        const labels = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May (Now)', 'Jun (Hundito)', 'Mid-Jul (Prep)', 'Late Jul (Blue Sky)'];
+        // Updated labels to reflect the new Pikes Peak August target
+        const labels = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May (Now)', 'Jun (Hundito)', 'Late Jul (Blue Sky)', 'Aug 8 (Pikes)'];
         
-        // Weight data
+        // Data Arrays
         const weightData = [182, 180.5, 179, 177.5, 176, 175.4, 172.5, 170.0, 168.5];
-        
-        // FTP data
         const ftpData = [240, 245, 250, 255, 260, 265, 272, 276, 280];
+        const bfData = [24.5, 23.5, 22.5, 21.5, 21.0, 20.7, 19.5, 18.0, 17.0];
 
         const progressionChart = new Chart(progCtx, {
             type: 'line',
@@ -431,7 +442,7 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Scale Wgt (inc. Water)',
+                        label: 'Scale Wgt (lbs)',
                         data: weightData,
                         borderColor: '#3b82f6', // Blue
                         backgroundColor: '#3b82f6',
@@ -442,7 +453,7 @@
                         pointBackgroundColor: ['#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6', '#10b981', '#3b82f6', '#3b82f6', '#f97316']
                     },
                     {
-                        label: 'Estimated FTP (Watts)',
+                        label: 'Est. FTP (Watts)',
                         data: ftpData,
                         borderColor: '#f97316', // Orange
                         backgroundColor: 'rgba(249, 115, 22, 0.1)',
@@ -453,6 +464,17 @@
                         fill: true,
                         pointRadius: [0, 0, 0, 0, 0, 6, 0, 0, 8],
                         pointBackgroundColor: '#f97316'
+                    },
+                    {
+                        label: 'Body Fat (%)',
+                        data: bfData,
+                        borderColor: '#10b981', // Emerald Green
+                        backgroundColor: '#10b981',
+                        borderWidth: 3,
+                        yAxisID: 'yBF',
+                        tension: 0.3,
+                        pointRadius: [4, 4, 4, 4, 4, 8, 4, 4, 8],
+                        pointBackgroundColor: '#10b981'
                     }
                 ]
             },
@@ -468,7 +490,9 @@
                                 let label = context.dataset.label || '';
                                 if (label) label += ': ';
                                 if (context.parsed.y !== null) {
-                                    label += context.parsed.y + (context.dataset.yAxisID === 'yWeight' ? ' lbs' : ' W');
+                                    if (context.dataset.yAxisID === 'yWeight') label += context.parsed.y + ' lbs';
+                                    else if (context.dataset.yAxisID === 'yFTP') label += context.parsed.y + ' W';
+                                    else if (context.dataset.yAxisID === 'yBF') label += context.parsed.y + '%';
                                 }
                                 return label;
                             }
@@ -493,6 +517,15 @@
                         min: 230,
                         max: 290,
                         grid: { drawOnChartArea: false }
+                    },
+                    yBF: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Body Fat %', color: '#10b981', font: {weight: 'bold'} },
+                        min: 15,
+                        max: 26,
+                        grid: { drawOnChartArea: false } // Prevents overlapping grid lines
                     }
                 }
             }
